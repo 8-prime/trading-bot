@@ -61,12 +61,6 @@ def list_compare(a,b):
     return True
 
 
-t1 = [1,2,3,4,5,6]
-
-t2 = [6,3,2,4,5,1]
-
-print(list_compare(t1,t2))
-
 
 #this is where the program will be most of the time
 while(True):
