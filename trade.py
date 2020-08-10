@@ -35,6 +35,7 @@ def update_all_stocks(held_stocks, top_5_stocks):
         updated = False
         while(not updated):
             try:
+                print("Updating Price history for stock ", stock.get_name())
                 stock.set_price_hist(ts.get_intraday(stock.get_name()))
                 updated = True
             except:
@@ -43,17 +44,34 @@ def update_all_stocks(held_stocks, top_5_stocks):
         updated = False
         while(not updated):
             try:
+                print("Updating Price history for stock ", stock.get_name())
                 stock.set_price_hist(ts.get_intraday(stock.get_name()))
                 updated = True
             except:
                 pass
 
+def list_compare(a,b):
+    sa = sorted(a)
+    sb = sorted(b)
+    if (len(sa) != len(sb)):
+        return False
+    for i in range (len(sa)):
+        if sa[i] != sb[i]:
+            return False
+    return True
 
+
+t1 = [1,2,3,4,5,6]
+
+t2 = [6,3,2,4,5,1]
+
+print(list_compare(t1,t2))
 
 
 #this is where the program will be most of the time
 while(True):
-    if (get_daily_top_n(5) != top_5):
+    #check of top 5 changed. if so update list of top5 stocks
+    if (list_compare(get_daily_top_n(5), top_5)):
         top_5_stocks = []
         top_5 = get_daily_top_n(5)
         for name in top_5:
@@ -62,14 +80,19 @@ while(True):
             accessed = False
             while(not accessed):
                 try:
+                    print("trying to get data for ", name)
                     current_price_hist = ts.get_intraday(name)
                     accessed = True
                     newStock.set_price_hist(current_price_hist)
+                except ValueError:
+                    accessed = True
                 except:
                     pass
 
-            top_5_stocks += newStock
+            top_5_stocks += [newStock]
             
+
+    print(top_5_stocks)
 
     update_all_stocks(held_stocks, top_5_stocks)
     #check if i have to sell stocks because their value is decreasing
