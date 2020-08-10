@@ -72,6 +72,7 @@ while(True):
             newStock = Stock(name=name)
             #create stock with name and the price hist for the given name. this has to be done in try cath as it relys on the api
             accessed = False
+            viable_stock = True
             while(not accessed):
                 try:
                     print("trying to get data for ", name)
@@ -79,11 +80,12 @@ while(True):
                     accessed = True
                     newStock.set_price_hist(current_price_hist)
                 except ValueError:
+                    viable_stock = False
                     accessed = True
                 except:
                     pass
-
-            top_5_stocks += [newStock]
+            if viable_stock:
+                top_5_stocks += [newStock]
             
 
     print(top_5_stocks)
