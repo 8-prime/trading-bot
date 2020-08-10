@@ -60,7 +60,14 @@ def list_compare(a,b):
             return False
     return True
 
-
+def is_known_stock(name_of_stock):
+    for i in held_stocks:
+        if i.get_name() == name_of_stock:
+            return True
+    for i in top_5_stocks:
+        if i.get_name() == name_of_stock:
+            return True
+    return False
 
 #this is where the program will be most of the time
 while(True):
@@ -69,6 +76,9 @@ while(True):
         top_5_stocks = []
         top_5 = get_daily_top_n(5)
         for name in top_5:
+            if is_known_stock(name):
+                break
+            #check if the stock already exists in the current top 5 or in the known stocks
             newStock = Stock(name=name)
             #create stock with name and the price hist for the given name. this has to be done in try cath as it relys on the api
             accessed = False
@@ -87,8 +97,6 @@ while(True):
             if viable_stock:
                 top_5_stocks += [newStock]
             
-
-    print(top_5_stocks)
 
     update_all_stocks(held_stocks, top_5_stocks)
     #check if i have to sell stocks because their value is decreasing
