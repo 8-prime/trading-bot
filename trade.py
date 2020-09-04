@@ -2,9 +2,11 @@ from stock import Stock
 from scrape import get_daily_top_n
 from alpha_vantage.timeseries import TimeSeries
 
+#########All of this is just primary setup that will run one when the programm is started ###########
+
 #setup for using alpha vantage for getting currenty prices for stocks
 key = "RROECGAUHBTD2S5B"
-ts = TimeSeries(key=key)
+ts = TimeSeries(key=key, output_format='pandas', indexing_type='integer')
 
 #retrieve top n changers for the day
 top_5  = get_daily_top_n(5)
@@ -13,6 +15,14 @@ top_5  = get_daily_top_n(5)
 money = 1000
 held_stocks = []
 top_5_stocks = []
+
+
+
+
+
+########## These are functions that are needed for the programm to work #######
+
+
 
 def sell(stock):
     #sell remove stock from the list of held stocks and add the money the amount of stocks are worth to the money
@@ -70,12 +80,13 @@ def is_known_stock(name_of_stock):
             return True
     return False
 
-#this is where the program will be most of the time
-while(True):
-    #check of top 5 changed. if so update list of top5 stocks
-    if (list_compare(get_daily_top_n(5), top_5)):
+#checks if there are new stocks in the top 5
+def check_for_new_stocks():
+    if (not list_compare(get_daily_top_n(5), top_5)):
+        #delete current list of top 5
         top_5_stocks = []
-        new_top_5 = get_daily_top_n(5)
+        #overwrites top 5 names of stocks as to not be influenced by the accessability of the given stock for alpha vantage
+        top_5 = get_daily_top_n(5)
         for name in top_5:
             if is_known_stock(name):
                 break
@@ -88,8 +99,8 @@ while(True):
                 try:
                     print("trying to get data for ", name)
                     current_price_hist = ts.get_intraday(name)
-                    accessed = True
                     newStock.set_price_hist(current_price_hist)
+                    accessed = True
                 except ValueError:
                     viable_stock = False
                     accessed = True
@@ -97,6 +108,15 @@ while(True):
                     pass
             if viable_stock:
                 top_5_stocks += [newStock]
+
+
+######### This is the main programm ##########
+
+
+
+while(True):
+    #check of top 5 changed. if so update list of top5 stocks
+    
             
 
     update_all_stocks(held_stocks, top_5_stocks)
@@ -111,14 +131,3 @@ while(True):
         #if miney / 5-i is greater than the price of the stock, fecking go mate
         #if we already own stock for this changer, we will check the next one and so on, potentially not buying at all
         i = 312 # dummy shit to avoid errors
-
-
-    
-
-
-"""
-for name in top_5:
-    data, meta = ts.get_intraday(symbol=name)
-    stonks += [data]
-    print(data[0])
-"""
