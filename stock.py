@@ -23,7 +23,12 @@ class Stock:
         self.current_price = new_price
     
     def get_sliding_average(self):
-        return self.sliding_average
+        total = 0 
+        usable_data = self.price_hist[0]['1. open']
+        num_vals = len(usable_data)
+        for i in range(len(usable_data)):
+            total += usable_data[i]
+        return total/num_vals
     
     def set_sliding_average(self, new_average):
         self.sliding_average = new_average
