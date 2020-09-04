@@ -1,0 +1,9 @@
+
+Todo:
+  ☐ understand the type of structure retunred for intraday stock price
+  ☐ Grab top five changers for the day
+  ☐ make funktion to check if the top 5 changers are different. if so replace all of them 
+  ☐ function to create the daily values for the stock into a sliding average that can be saved in the stock class
+  ☐ function to sell stock when the value falls below the sliding average
+  ☐ buy if price for stock is lower than one 5th of the money currently available 
+  ☐ when a stock of the top five is bought it is moved to the bought stocks

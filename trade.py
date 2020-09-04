@@ -18,18 +18,19 @@ def sell(stock):
     #sell remove stock from the list of held stocks and add the money the amount of stocks are worth to the money
     return 0
 
-def buy(stock):
-    #add amount of bought stocks to the list of held stocks and remove the cost from money
-    return 0
-
 #return true if a stock is worth buying
 def check_stock_buyabulity():
     return True
+
+def buy(stock):
+    #add amount of bought stocks to the list of held stocks and remove the cost from money
+    return 0
 
 #check if the maximum stop loss has been reached or if the stock fell under the daily average
 def check_stock_sellability(stock):
     return True
 
+#this updates the sliding average for all the stocks
 def update_all_stocks(held_stocks, top_5_stocks):
     for stock in held_stocks:
         updated = False
@@ -74,7 +75,7 @@ while(True):
     #check of top 5 changed. if so update list of top5 stocks
     if (list_compare(get_daily_top_n(5), top_5)):
         top_5_stocks = []
-        top_5 = get_daily_top_n(5)
+        new_top_5 = get_daily_top_n(5)
         for name in top_5:
             if is_known_stock(name):
                 break
