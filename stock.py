@@ -1,14 +1,15 @@
 
 class Stock:
-
+    #name of the stock
     name = ""
+    #in epoch time
     price_time_of_purchase = 0
     sliding_average = 0
     amount_held = 0
     current_price = 0
     price_hist = []
 
-    def __init__(self, price_time_of_purchase = 0, sliding_average = 0, amount_held = 0, current_price = 0, name = "", price_hist = []):
+    def __init__(self, price_time_of_purchase = 0, sliding_average = 0, amount_held = 0, current_price = 0, name = "", price_hist = None):
         self.name = name
         self.price_time_of_purchase = price_time_of_purchase
         self.sliding_average = sliding_average

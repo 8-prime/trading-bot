@@ -44,6 +44,7 @@ def check_stock_sellability(stock):
 def update_all_stocks(held_stocks, top_5_stocks):
     for stock in held_stocks:
         updated = False
+        #try to update stock until api returns result
         while(not updated):
             try:
                 print("Updating Price history for stock ", stock.get_name())
@@ -53,6 +54,7 @@ def update_all_stocks(held_stocks, top_5_stocks):
                 pass
     for stock in top_5_stocks:
         updated = False
+        #try to update stock until api returns result
         while(not updated):
             try:
                 print("Updating Price history for stock ", stock.get_name())
@@ -60,6 +62,7 @@ def update_all_stocks(held_stocks, top_5_stocks):
                 updated = True
             except:
                 pass
+
 
 def list_compare(a,b):
     sa = sorted(a)
@@ -116,9 +119,6 @@ def check_for_new_stocks():
 
 while(True):
     #check of top 5 changed. if so update list of top5 stocks
-    
-            
-
     update_all_stocks(held_stocks, top_5_stocks)
     #check if i have to sell stocks because their value is decreasing
     for stock in held_stocks:
