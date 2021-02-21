@@ -16,14 +16,28 @@ top_n_changer_names = []
 top_n_changers_stock = []
 held_stocks = []
 stonks = 1000
+MONEY_INDEX = '1. open'
 
 
 
 
 
 
-
-
+#this will buy the stock and if its not yet know, create a new stock.
+#  if it is already known it will just add however stocks are to be bought
+def buy_stock(name, amount, data):
+    #check for existing stock
+        
+    for stock in held_stocks:
+        if stock.get_name() == name:
+            stock.set_amount_held(stock.get_amount_held() + amount)
+            stonks -= (data[0][MONEY_INDEX][0] * amount)
+    #create new stock
+    while (True):
+        current_price = data[0][MONEY_INDEX][0]
+        held_stocks += Stock(current_price, 0, amount, current_price, name, data)
+        stonks -= current_price * amount
+        return
 
 def update_stock(name):
     while(True):
@@ -40,13 +54,22 @@ def create_empty_stock(name):
     while(True):
         try:
             data = ts.get_intraday(name)
-            current_price = data[0]['1. open']
+            current_price = data[0][MONEY_INDEX][0]
+            print(type(current_price))
             return Stock(0,0,0,current_price,name,data)
         except Exception:
             pass
 
 
-
+def list_compare(a,b):
+    sa = sorted(a)
+    sb = sorted(b)
+    if (len(sa) != len(sb)):
+        return False
+    for i in range (len(sa)):
+        if sa[i] != sb[i]:
+            return False
+    return True
 
 '''
 Because the script is only supposed to do things when the stock market is open
