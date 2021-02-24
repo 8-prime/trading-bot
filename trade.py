@@ -50,7 +50,7 @@ def update_all_stocks(held_stocks, top_5_stocks):
                 print("Updating Price history for stock ", stock.get_name())
                 stock.set_price_hist(ts.get_intraday(stock.get_name()))
                 updated = True
-            except:
+            except Exception:
                 pass
     for stock in top_5_stocks:
         updated = False
@@ -60,7 +60,7 @@ def update_all_stocks(held_stocks, top_5_stocks):
                 print("Updating Price history for stock ", stock.get_name())
                 stock.set_price_hist(ts.get_intraday(stock.get_name()))
                 updated = True
-            except:
+            except Exception:
                 pass
 
 
@@ -107,7 +107,7 @@ def check_for_new_stocks():
                 except ValueError:
                     viable_stock = False
                     accessed = True
-                except:
+                except Exception:
                     pass
             if viable_stock:
                 top_5_stocks += [newStock]
