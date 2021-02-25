@@ -3,8 +3,6 @@ import time
 from datetime import datetime
 from scrape import get_daily_top_n
 from alpha_vantage.timeseries import TimeSeries
-from stock import Stock
-
 
 '''
     Global variables needed for operation
@@ -13,6 +11,7 @@ key = ''
 fd =  './keyfile'
 with open(fd, 'r') as file:
     key = file.readlines()
+print(key)
 ts = TimeSeries(key=key[0], output_format='pandas', indexing_type='integer')
 CURRENT_PRICE_INDEX = '1. open'
 SLEEP_DURATION = 900
@@ -63,7 +62,7 @@ def persist():
 def test_for_buying():
     print('Looking at potential stocks to buy')
     if data['Money'] > 0:
-        names_interested = stocks_of_interest.keys()
+        names_interested = list(stocks_of_interest.keys())
         for name in names_interested:
             if data['Money'] > stocks_of_interest[name]['current_price']:
                 print('Buying ' + name + ' for: ' + stocks_of_interest[name]['current_price'] + '$')
@@ -76,8 +75,9 @@ def test_for_buying():
 #when checking for stocks to sell iterato trough the list of keys,
 #exlude 'Money' and then check of the condition to sell is met
 def test_for_selling():
-    stock_list = data.keys()
+    stock_list = list(data.keys())
     stock_list.remove('Money')
+    print('Testing for sellable stocks')
     for stock in stock_list:
         if data[stock]['current_price'] < data[stock]['price_top']:
             print('Selling ' + stock)
@@ -86,7 +86,8 @@ def test_for_selling():
 
 #update data for the stocks of interest
 def update_interested():
-    names_interested = stocks_of_interest.keys()
+    print('Updating stocks of interest')
+    names_interested = list(stocks_of_interest.keys())
     for name in names_interested:
         while True:
             try:
@@ -99,8 +100,9 @@ def update_interested():
 
 #update data for the owned stocks
 def update_held_stocks():
-    names_held_stocks = data.keys()
-    key.remove('Money')
+    names_held_stocks = list(data.keys())
+    names_held_stocks.remove('Money')
+    print('Updating held stocks')
     for name in names_held_stocks:
         while True:
             try:
@@ -116,30 +118,33 @@ def update_held_stocks():
 
 def populate_of_interest():
     names_of_interest = get_daily_top_n(5)
-    keys = stocks_of_interest.keys()
+    print('Top five retreived')
+    global stocks_of_interest
     # if the list has changed it will be replaced by the new top n
-    if not list_compare(names_of_interest, keys):
+    if not stocks_of_interest or not list_compare(names_of_interest, list(stocks_of_interest.keys())):
+        print('New stocks found')
         stocks_of_interest = {}
         for name in names_of_interest:
             while True:
                 try:
+                    print('Trying to retreive data for ' + name)
                     current_price_history = ts.get_intraday(name)
                     stocks_of_interest[name] = {
                         'current_price' : current_price_history[0][CURRENT_PRICE_INDEX][0]
                     }
                     break
                 except ValueError: # catches the case that the name from the daily top n is not available trough alpha vantage
-                    continue
+                    break
                 except Exception: # Catches the exception thrown when the max api calls were used
                     pass
 
 while True:
-    if opening_time > datetime.now() and datetime.now() < closing_time:
+    #if True:#opening_time > datetime.now() and datetime.now() < closing_time:
         #stockmarket is open baby
-        populate_of_interest()
-        update_held_stocks()
-        update_interested()
-        test_for_selling()
-        test_for_buying()
-        persist()
-        time.sleep(SLEEP_DURATION)
+    populate_of_interest()
+    update_held_stocks()
+    update_interested()
+    test_for_selling()
+    test_for_buying()
+    persist()
+    time.sleep(SLEEP_DURATION)
