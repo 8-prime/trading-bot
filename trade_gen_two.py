@@ -1,4 +1,5 @@
 import json
+import time
 from datetime import datetime
 from scrape import get_daily_top_n
 from alpha_vantage.timeseries import TimeSeries
@@ -14,6 +15,7 @@ with open(fd, 'r') as file:
     key = file.readlines()
 ts = TimeSeries(key=key[0], output_format='pandas', indexing_type='integer')
 CURRENT_PRICE_INDEX = '1. open'
+SLEEP_DURATION = 900
 
 stocks_of_interest = {}
 data = {}
@@ -25,8 +27,6 @@ the opening and closing times have to be saved
 '''
 opening_time = datetime.now().replace(hour=8, minute=0, second=0, microsecond=0)
 closing_time = datetime.now().replace(hour=20, minute=0, second=0, microsecond=0)
-
-
 '''
 Structure for the data dictionary:
     a Stock has its name as the key and has a dict as the value  with the following fields
@@ -55,16 +55,18 @@ def list_compare(a,b):
             return False
     return True
 
-
 def persist():
+    print('Writing data to file')
     with open('data.json', 'w') as file:
         json.dump(data,file,indent=4)
 
 def test_for_buying():
+    print('Looking at potential stocks to buy')
     if data['Money'] > 0:
         names_interested = stocks_of_interest.keys()
         for name in names_interested:
             if data['Money'] > stocks_of_interest[name]['current_price']:
+                print('Buying ' + name + ' for: ' + stocks_of_interest[name]['current_price'] + '$')
                 data['Money'] -= stocks_of_interest[name]['current_price']
                 data[name]['amount_held'] += 1
                 data[name]['current_price'] = stocks_of_interest[name]['current_price']
@@ -78,6 +80,7 @@ def test_for_selling():
     stock_list.remove('Money')
     for stock in stock_list:
         if data[stock]['current_price'] < data[stock]['price_top']:
+            print('Selling ' + stock)
             data['Money'] += data[stock]['current_price'] * data[stock]['amount_held']
             del data[stock]
 
@@ -89,6 +92,7 @@ def update_interested():
             try:
                 updated_price = ts.get_intraday(name)
                 stocks_of_interest[name]['current_price'] = updated_price[0][CURRENT_PRICE_INDEX][0]
+                print('Updated potential stock ' + name)
                 return
             except Exception:
                 pass
@@ -103,6 +107,7 @@ def update_held_stocks():
                 updated_price = ts.get_intraday(name)
                 data[name]['sliding_average'] = (data[name]['sliding_average'] + updated_price[0][CURRENT_PRICE_INDEX][0]) / 2
                 data[name]['current_price'] = updated_price[0][CURRENT_PRICE_INDEX][0]
+                print('Updated held stock ' + name)
                 return
             except Exception:
                 pass
@@ -136,3 +141,5 @@ while True:
         update_interested()
         test_for_selling()
         test_for_buying()
+        persist()
+        time.sleep(SLEEP_DURATION)
