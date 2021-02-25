@@ -65,8 +65,9 @@ def test_for_buying():
         names_interested = list(stocks_of_interest.keys())
         for name in names_interested:
             if data['Money'] > stocks_of_interest[name]['current_price']:
-                print('Buying ' + name + ' for: ' + stocks_of_interest[name]['current_price'] + '$')
+                print('Buying ' + name + ' for: ' + str(stocks_of_interest[name]['current_price']) + '$')
                 data['Money'] -= stocks_of_interest[name]['current_price']
+                data[name] = {}
                 data[name]['amount_held'] += 1
                 data[name]['current_price'] = stocks_of_interest[name]['current_price']
                 data[name]['sliding_average'] = stocks_of_interest[name]['current_price']
